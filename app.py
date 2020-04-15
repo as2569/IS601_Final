@@ -36,7 +36,7 @@ def setup_scheduler():
 	scheduler.start()
 	scheduler.add_job(
 		func=test,
-		trigger=IntervalTrigger(seconds=2),
+		trigger=IntervalTrigger(seconds=30),
 		id='test',
 		name='test',
 		replace_existing=True)
@@ -50,6 +50,7 @@ def register_extensions(app):
 
 def register_blueprints(app):
 	from final.auth.models import User
+	from final.core.models import Character
 
 	@login_manager.user_loader
 	def load_user(user_id):
