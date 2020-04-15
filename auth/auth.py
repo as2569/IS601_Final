@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from final.auth.forms import RegisterForm, LoginForm
 from final.auth.models import User
-#from app import db
+from final.app import db
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
@@ -18,7 +18,7 @@ def login():
 
 		user = User.query.filter_by(username=username).first()
 
-		if user is None or not user.check_password_hash(user.password, password):
+		if not user or not check_password_hash(user.password, password):
 			flash('Invalid username or password')
 			return redirect(url_for('auth.login'))
 
