@@ -1,5 +1,8 @@
-from flask import Blueprint, render_template, url_for, redirect, request
+from flask import Blueprint, render_template, url_for, redirect, request, current_app
 from flask_login import current_user, login_required
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+import atexit
 
 from final.core.forms import SelectForm
 from final.core.models import Character
@@ -14,21 +17,50 @@ def index():
 
 	if character is None:
 		# First character, go to create character
-		print('char is none')
 		return redirect(url_for('core.selectCharacter'))
-
 	if character.alive is False:
 		# Dead character, go to create character
-		print('char exists')
 		return redirect(url_for('core.selectCharacter'))
 
+	setupScheduler()
 	return render_template('index.html')
 
 @core_bp.route('/selectCharacter', methods=['GET', 'POST'])
 @login_required
 def selectCharacter():
+	#check if created ?
 	form = SelectForm()
 	if form.validate_on_submit():
-		name = request.form.get('name')
-		print('select character name ' + name)
+		character = Character()
+		character.owner_id=current_user.get_id()
+		character.alive=True
+		character.energy=50
+		character.sanity=50
+		character.money=50
+		character.characterName=request.form.get('name')
+
+		db.session.add(character)
+		db.session.commit()
+		return redirect(url_for('core.index'))
 	return render_template('selectCharacter.html', form=form)
+
+@core_bp.route('/updateCharacter')
+@login_required
+def updateCharacter():
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	character.money = character.money - 10
+	print('money is ' + str(character.money))
+	db.session.commit()
+	return render_template('index.html', money=character.money)
+
+
+def test():
+	print('test')
+
+def setupScheduler():
+	scheduler = BackgroundScheduler()
+	scheduler.add_job(
+		func=test,
+		trigger=IntervalTrigger(seconds=15))
+	scheduler.start()
+	atexit.register(lambda: scheduler.shutdown())

@@ -1,12 +1,10 @@
 import functools
+import atexit
 from flask import Flask, redirect, flash, url_for
 from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-import atexit
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -14,9 +12,6 @@ csrf = CSRFProtect()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
-
-def test():
-	print('this is a test')
 
 def create_app():
 	app = Flask(__name__)
@@ -27,20 +22,8 @@ def create_app():
 
 	register_extensions(app)
 	register_blueprints(app)
-	setup_scheduler()
 
 	return app
-
-def setup_scheduler():
-	scheduler = BackgroundScheduler()
-	scheduler.start()
-	scheduler.add_job(
-		func=test,
-		trigger=IntervalTrigger(seconds=30),
-		id='test',
-		name='test',
-		replace_existing=True)
-	atexit.register(lambda: scheduler.shutdown())
 
 def register_extensions(app):
 	db.init_app(app)
