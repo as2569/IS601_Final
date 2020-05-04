@@ -23,12 +23,12 @@ def index():
 		return redirect(url_for('core.selectCharacter'))
 
 	setupScheduler()
-	return render_template('index.html')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	return render_template('index.html', character = character)
 
 @core_bp.route('/selectCharacter', methods=['GET', 'POST'])
 @login_required
 def selectCharacter():
-	#check if created ?
 	form = SelectForm()
 	if form.validate_on_submit():
 		character = Character()
@@ -49,10 +49,8 @@ def selectCharacter():
 def updateCharacter():
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	character.money = character.money - 10
-	print('money is ' + str(character.money))
 	db.session.commit()
-	return render_template('index.html', money=character.money)
-
+	return render_template('index.html', character = character)
 
 def test():
 	print('test')
