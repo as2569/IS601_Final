@@ -47,6 +47,7 @@ def selectCharacter():
 @core_bp.route('/updateCharacter')
 @login_required
 def updateCharacter():
+	print('updating character')
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	character.money = character.money - 10
 	db.session.commit()

@@ -6,6 +6,9 @@
 </h1>
 
 <div>
-	<p>Money :{{ character.money }} </p>	
+	<p>Money : {{ character.money }} </p>
+	<p>Sanity : {{ character.sanity }} </p>
+	<a class="btn" href="{{url_for('core.updateCharacter') }}">Click me</a>  
+	
 </div>
 {% endblock %}
