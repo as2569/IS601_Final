@@ -37,6 +37,8 @@ def selectCharacter():
 		character.energy=50
 		character.sanity=50
 		character.money=50
+		character.grades=50
+		character.progress=50
 		character.characterName=request.form.get('name')
 
 		db.session.add(character)
@@ -44,14 +46,42 @@ def selectCharacter():
 		return redirect(url_for('core.index'))
 	return render_template('selectCharacter.html', form=form)
 
-@core_bp.route('/updateCharacter')
+@core_bp.route('/gameOver')
+def gameOver():
+	print('game over')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	db.session.delete(character)
+	db.session.commit()
+	return render_template('gameOver.html', character = character)
+
+@core_bp.route('/allowNap')
 @login_required
-def updateCharacter():
-	print('updating character')
+def allowNap():
+	print('allow nap')
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	character.money = character.money - 10
 	db.session.commit()
 	return render_template('index.html', character = character)
+
+@core_bp.route('/buyCoffee')
+@login_required
+def buyCoffee():
+	print('buy coffee')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	if(character.money > 2):
+		character.money = character.money - 2
+		character.energy = character.energy + 3
+		db.session.commit()
+	return render_template('index.html', character = character)
+
+@core_bp.route('/updateCharacter')
+@login_required
+def updateCharacter():
+        print('updating character')
+        character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+        character.money = character.money - 10
+        db.session.commit()
+        return render_template('index.html', character = character)
 
 def test():
 	print('test')

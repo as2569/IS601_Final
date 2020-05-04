@@ -7,4 +7,6 @@ class Character(db.Model):
 	energy = db.Column(db.Integer)
 	sanity = db.Column(db.Integer)
 	money = db.Column(db.Integer)
+	grades = db.Column(db.Integer)
+	progress = db.Column(db.Integer)
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))

@@ -2,13 +2,16 @@
 
 {% block content %}
 <h1 class="title">
-  Game
+Game
 </h1>
 
 <div>
 	<p>Money : {{ character.money }} </p>
 	<p>Sanity : {{ character.sanity }} </p>
-	<a class="btn" href="{{url_for('core.updateCharacter') }}">Click me</a>  
+	<p>Energy : {{ character.energy }} </p>
+	<p>Grades : {{ character.grades }} </p>
+	<p>Progress : {{ character.progress }} </p>
+	<a type="button" class="btn btn-secondary" href="{{url_for('core.buyCoffee')}}">Buy Coffee</a>  
 	
 </div>
 {% endblock %}
