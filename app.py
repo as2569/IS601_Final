@@ -5,10 +5,12 @@ from flask_login import LoginManager, current_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
+from flask_apscheduler import APScheduler
 
 db = SQLAlchemy()
 migrate = Migrate()
 csrf = CSRFProtect()
+scheduler = APScheduler()
 
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
@@ -19,6 +21,7 @@ def create_app():
 	app.config['SECRET_KEY'] = 'secret'
 	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 	app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+	app.config['SCHEDULER_API_ENABLED'] = True
 
 	register_extensions(app)
 	register_blueprints(app)
@@ -30,6 +33,8 @@ def register_extensions(app):
 	migrate.init_app(app, db)
 	csrf.init_app(app)
 	login_manager.init_app(app)
+	scheduler.init_app(app)
+	scheduler.start()
 
 def register_blueprints(app):
 	from final.auth.models import User

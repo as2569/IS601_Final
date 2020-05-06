@@ -6,7 +6,7 @@ import atexit
 
 from final.core.forms import SelectForm
 from final.core.models import Character
-from final.app import db
+from final.app import db, scheduler
 
 core_bp = Blueprint('core', __name__, template_folder='templates')
 
@@ -22,9 +22,13 @@ def index():
 		# Dead character, go to create character
 		return redirect(url_for('core.selectCharacter'))
 
-	setupScheduler()
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	return render_template('index.html', character = character)
+
+#@core_bp.route('/schedule')
+@scheduler.task('interval', id='job', seconds=30)
+def job():
+	print('Job 1 test')
 
 @core_bp.route('/selectCharacter', methods=['GET', 'POST'])
 @login_required
@@ -83,13 +87,3 @@ def updateCharacter():
         db.session.commit()
         return render_template('index.html', character = character)
 
-def test():
-	print('test')
-
-def setupScheduler():
-	scheduler = BackgroundScheduler()
-	scheduler.add_job(
-		func=test,
-		trigger=IntervalTrigger(seconds=15))
-	scheduler.start()
-	atexit.register(lambda: scheduler.shutdown())
