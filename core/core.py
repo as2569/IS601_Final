@@ -21,14 +21,23 @@ def index():
 	if character.alive is False:
 		# Dead character, go to create character
 		return redirect(url_for('core.selectCharacter'))
+	if(checkLoseCondition() is True):
+		# Lose condition triggered, go to game over
+		return redirect(url_for('core.gameOver'))
 
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	return render_template('index.html', character = character)
 
-#@core_bp.route('/schedule')
-@scheduler.task('interval', id='job', seconds=30)
+def checkLoseCondition():
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	if character.money <= 0:
+		print("no money, gameover")
+		return True
+	return False
+
+@scheduler.task('interval', id='random', seconds=20)
 def job():
-	print('Job 1 test')
+	print('Job test')
 
 @core_bp.route('/selectCharacter', methods=['GET', 'POST'])
 @login_required
@@ -52,6 +61,7 @@ def selectCharacter():
 
 @core_bp.route('/gameOver')
 def gameOver():
+	#todo shutdown scheduler
 	print('game over')
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	db.session.delete(character)
@@ -72,11 +82,11 @@ def allowNap():
 def buyCoffee():
 	print('buy coffee')
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
-	if(character.money > 2):
+	if(character.money > -10):
 		character.money = character.money - 2
 		character.energy = character.energy + 3
 		db.session.commit()
-	return render_template('index.html', character = character)
+	return redirect(url_for('core.index'))
 
 @core_bp.route('/updateCharacter')
 @login_required
