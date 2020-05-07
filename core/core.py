@@ -68,24 +68,68 @@ def gameOver():
 	db.session.commit()
 	return render_template('gameOver.html', character = character)
 
-@core_bp.route('/allowNap')
+@core_bp.route('/coffee')
 @login_required
-def allowNap():
-	print('allow nap')
+def coffee():
+	print('coffee')
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
-	character.money = character.money - 10
+	character.money = character.money - 1
+	character.energy = character.energy + 2
 	db.session.commit()
-	return render_template('index.html', character = character)
+	return redirect(url_for('core.index'))
 
-@core_bp.route('/buyCoffee')
+@core_bp.route('/nap')
 @login_required
-def buyCoffee():
-	print('buy coffee')
+def nap():
+	print('nap')
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
-	if(character.money > -10):
-		character.money = character.money - 2
-		character.energy = character.energy + 3
-		db.session.commit()
+	character.energy = character.energy + 4
+	character.sanity = character.sanity + 4
+	character.progress = character.progress - 3
+	character.grades = character.grades - 3
+	db.session.commit()
+	return redirect(url_for('core.index'))
+
+@core_bp.route('/research')
+@login_required
+def research():
+	print('research')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	character.sanity = character.sanity - 2
+	character.energy = character.energy - 3
+	character.progress = character.progress +6
+	db.session.commit()
+	return redirect(url_for('core.index'))
+
+@core_bp.route('/uber')
+@login_required
+def uber():
+	print('uber')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	character.money = character.money + 5
+	character.energy = character.energy - 4
+	db.session.commit()
+	return redirect(url_for('core.index'))
+
+@core_bp.route('/beer')
+@login_required
+def beer():
+	print('beer')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	character.money = character.money - 1
+	character.sanity = character.sanity + 2
+	db.session.commit()
+	return redirect(url_for('core.index'))
+
+@core_bp.route('/study')
+@login_required
+def study():
+	print('study')
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	character.grades = character.grades + 6
+	character.energy = character.energy - 2
+	character.sanity = character.sanity - 3
+	db.session.commit()
 	return redirect(url_for('core.index'))
 
 @core_bp.route('/updateCharacter')
