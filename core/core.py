@@ -29,7 +29,7 @@ def index():
 		return redirect(url_for('core.gameOver'))
 
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
-	return render_template('index.html', character = character)
+	return render_template('index.html', character = character, records = getEventRecords())
 
 # Utility
 def checkLoseCondition():

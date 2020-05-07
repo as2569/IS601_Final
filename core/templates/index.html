@@ -5,7 +5,6 @@
 Game
 </h1>
 
-
 <div>
 	<h1> {{ character.characterName }} </h1>
 	<p>Money : {{ character.money }} </p>
@@ -13,6 +12,17 @@ Game
 	<p>Energy : {{ character.energy }} </p>
 	<p>Grades : {{ character.grades }} </p>
 	<p>Progress : {{ character.progress }} </p>
+</div>
+
+
+	<ul class="list-group">
+	{% for r in records %}
+	<li> {{ r.event }} </li>
+	{% endfor %}
+	</ul>
+
+
+<div>
 	<a type="button" class="btn btn-secondary" href="{{url_for('core.coffee')}}">Buy Coffee</a>  
 	<a type="button" class="btn btn-secondary" href="{{url_for('core.nap')}}">Allow Nap</a>  
 	<a type="button" class="btn btn-secondary" href="{{url_for('core.research')}}">Drive Uber</a>  
