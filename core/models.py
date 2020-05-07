@@ -10,3 +10,9 @@ class Character(db.Model):
 	grades = db.Column(db.Integer)
 	progress = db.Column(db.Integer)
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+class EventRecord(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	timeStamp = db.Column(db.DateTime)
+	event = db.Column(db.String(150))
+	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))

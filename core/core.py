@@ -2,14 +2,17 @@ from flask import Blueprint, render_template, url_for, redirect, request, curren
 from flask_login import current_user, login_required
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from sqlalchemy import desc
 import atexit
+import datetime
 
 from final.core.forms import SelectForm
-from final.core.models import Character
+from final.core.models import Character, EventRecord
 from final.app import db, scheduler
 
 core_bp = Blueprint('core', __name__, template_folder='templates')
 
+# Page
 @core_bp.route('/')
 @login_required
 def index():
@@ -28,6 +31,7 @@ def index():
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	return render_template('index.html', character = character)
 
+# Utility
 def checkLoseCondition():
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	if character.money <= 0:
@@ -35,10 +39,29 @@ def checkLoseCondition():
 		return True
 	return False
 
+# Utility
+def addEventRecord(str):
+	eventRecord = EventRecord()
+	eventRecord.owner_id = current_user.get_id()
+	eventRecord.event = str
+	eventRecord.timeStamp = datetime.datetime.now()
+
+	db.session.add(eventRecord)
+	db.session.commit()
+
+	getEventRecords()
+
+# Utility
+def getEventRecords():
+	rList = EventRecord.query.filter_by(owner_id=current_user.get_id()).order_by(desc(EventRecord.timeStamp)).limit(3)
+	return rList
+
+# Task
 @scheduler.task('interval', id='random', seconds=20)
 def job():
 	print('Job test')
 
+# Page
 @core_bp.route('/selectCharacter', methods=['GET', 'POST'])
 @login_required
 def selectCharacter():
@@ -59,6 +82,7 @@ def selectCharacter():
 		return redirect(url_for('core.index'))
 	return render_template('selectCharacter.html', form=form)
 
+# Page
 @core_bp.route('/gameOver')
 def gameOver():
 	#todo shutdown scheduler
@@ -68,6 +92,7 @@ def gameOver():
 	db.session.commit()
 	return render_template('gameOver.html', character = character)
 
+# User
 @core_bp.route('/coffee')
 @login_required
 def coffee():
@@ -76,8 +101,12 @@ def coffee():
 	character.money = character.money - 1
 	character.energy = character.energy + 2
 	db.session.commit()
+
+	s = 'Bought Coffee. Money -1, Energy +2.'
+	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
+# User
 @core_bp.route('/nap')
 @login_required
 def nap():
@@ -90,6 +119,7 @@ def nap():
 	db.session.commit()
 	return redirect(url_for('core.index'))
 
+# User
 @core_bp.route('/research')
 @login_required
 def research():
@@ -101,6 +131,7 @@ def research():
 	db.session.commit()
 	return redirect(url_for('core.index'))
 
+# User
 @core_bp.route('/uber')
 @login_required
 def uber():
@@ -111,6 +142,7 @@ def uber():
 	db.session.commit()
 	return redirect(url_for('core.index'))
 
+# User
 @core_bp.route('/beer')
 @login_required
 def beer():
@@ -121,6 +153,7 @@ def beer():
 	db.session.commit()
 	return redirect(url_for('core.index'))
 
+# User
 @core_bp.route('/study')
 @login_required
 def study():
@@ -132,12 +165,16 @@ def study():
 	db.session.commit()
 	return redirect(url_for('core.index'))
 
-@core_bp.route('/updateCharacter')
+# Debug
+@core_bp.route('/kill')
 @login_required
-def updateCharacter():
-        print('updating character')
-        character = Character.query.filter_by(owner_id=current_user.get_id()).first()
-        character.money = character.money - 10
-        db.session.commit()
-        return render_template('index.html', character = character)
+def kill():
+	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+	character.grades = character.grades - 1000
+	character.energy = character.energy - 1000
+	character.sanity = character.sanity - 1000
+	character.progress = character.progress - 1000
+	character.money = character.money - 1000
+	db.session.commit()
+	return redirect(url_for('core.index'))
 
