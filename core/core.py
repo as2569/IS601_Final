@@ -53,7 +53,7 @@ def addEventRecord(str):
 
 # Utility
 def getEventRecords():
-	rList = EventRecord.query.filter_by(owner_id=current_user.get_id()).order_by(desc(EventRecord.timeStamp)).limit(3)
+	rList = EventRecord.query.filter_by(owner_id=current_user.get_id()).order_by(desc(EventRecord.timeStamp)).limit(100)
 	return rList
 
 # Task
@@ -102,7 +102,7 @@ def coffee():
 	character.energy = character.energy + 2
 	db.session.commit()
 
-	s = 'Bought Coffee. Money -1, Energy +2.'
+	s = 'Bought Coffee. Money -1, Energy +2'
 	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
@@ -117,6 +117,9 @@ def nap():
 	character.progress = character.progress - 3
 	character.grades = character.grades - 3
 	db.session.commit()
+
+	s = 'You allow for a nap. Energy +4, Sanity +4, Grades -3, Research -3'
+	addEventRecords(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -129,6 +132,9 @@ def research():
 	character.energy = character.energy - 3
 	character.progress = character.progress +6
 	db.session.commit()
+
+	s = 'Research. Research +6, Energy -3, Sanity -2'
+	addEventRecords(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -140,6 +146,9 @@ def uber():
 	character.money = character.money + 5
 	character.energy = character.energy - 4
 	db.session.commit()
+
+	s = 'Driving Uber. Money +5, Energy -4'
+	addEventRecords(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -151,6 +160,9 @@ def beer():
 	character.money = character.money - 1
 	character.sanity = character.sanity + 2
 	db.session.commit()
+
+	s = 'Bought a beer. Sanity +2, Money -1'
+	addEventRecords(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -163,6 +175,9 @@ def study():
 	character.energy = character.energy - 2
 	character.sanity = character.sanity - 3
 	db.session.commit()
+
+	s = 'Study. Grades +6, Energy -2, Sanity -3'
+	addEventRecords(s)
 	return redirect(url_for('core.index'))
 
 # Debug

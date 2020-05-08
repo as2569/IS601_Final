@@ -5,6 +5,13 @@
 Game
 </h1>
 
+<style>
+.list-group{
+max-height: 200px;
+overflow: scroll;
+}
+</style>
+
 <div>
 	<h1> {{ character.characterName }} </h1>
 	<p>Money : {{ character.money }} </p>
@@ -17,7 +24,7 @@ Game
 
 	<ul class="list-group">
 	{% for r in records %}
-	<li> {{ r.event }} </li>
+	<li class="list-group-item list-group-item-secondary"> {{ r.event }} </li>
 	{% endfor %}
 	</ul>
 
