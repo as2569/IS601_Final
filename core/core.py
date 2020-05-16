@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from sqlalchemy import desc
+import random
 import atexit
 import datetime
 
@@ -28,6 +29,8 @@ def index():
 		# Lose condition triggered, go to game over
 		return redirect(url_for('core.gameOver'))
 
+#	scheduler.add_job(id='proposal', func=proposal, trigger="interval", seconds=3, args=[current_app._get_current_object()])
+#	scheduler.start()
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	return render_template('index.html', character = character, records = getEventRecords())
 
@@ -56,10 +59,36 @@ def getEventRecords():
 	rList = EventRecord.query.filter_by(owner_id=current_user.get_id()).order_by(desc(EventRecord.timeStamp)).limit(100)
 	return rList
 
-# Task
-@scheduler.task('interval', id='random', seconds=20)
-def job():
-	print('Job test')
+# Utility
+def destroyRecords():
+	rList = EventRecord.query.filter_by(owner_id=current_user.get_id()).order_by(desc(EventRecord.timeStamp))
+	for r in rList:
+		db.session.delete(r)
+		db.session.commit()
+
+# Proposal
+#@scheduler.task('interval', id='proposal', seconds=10)
+def proposal(app):
+	#app = current_app._get_current_object()
+	with app.app_context(), app.test_request_context():
+		val = random.random()
+		print('test')
+		character = Character.query.filter_by(owner_id=current_user.get_id()).first()
+		if val >= 0.6:
+			s = 'Paper submission rejected. Sanity -3'
+			character.sanity = character.sanity - 3
+		elif val >= 0.2:
+			s = 'Paper submission accepted with revision. Sanity -3'
+			character.sanity = character.sanity + 2
+		else:
+			s = 'Paper submission accepted! Hurray! Sanity -3'
+			character.sanity = character.sanity + 5
+
+		db.session.commit()
+		addEventRecord(s)
+		return redirect(url_for('core.kill'))
+
+
 
 # Page
 @core_bp.route('/selectCharacter', methods=['GET', 'POST'])
@@ -90,6 +119,7 @@ def gameOver():
 	character = Character.query.filter_by(owner_id=current_user.get_id()).first()
 	db.session.delete(character)
 	db.session.commit()
+	destroyRecords()
 	return render_template('gameOver.html', character = character)
 
 # User
@@ -119,7 +149,7 @@ def nap():
 	db.session.commit()
 
 	s = 'You allow for a nap. Energy +4, Sanity +4, Grades -3, Research -3'
-	addEventRecords(s)
+	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -134,7 +164,7 @@ def research():
 	db.session.commit()
 
 	s = 'Research. Research +6, Energy -3, Sanity -2'
-	addEventRecords(s)
+	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -148,7 +178,7 @@ def uber():
 	db.session.commit()
 
 	s = 'Driving Uber. Money +5, Energy -4'
-	addEventRecords(s)
+	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -162,7 +192,7 @@ def beer():
 	db.session.commit()
 
 	s = 'Bought a beer. Sanity +2, Money -1'
-	addEventRecords(s)
+	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
 # User
@@ -177,7 +207,7 @@ def study():
 	db.session.commit()
 
 	s = 'Study. Grades +6, Energy -2, Sanity -3'
-	addEventRecords(s)
+	addEventRecord(s)
 	return redirect(url_for('core.index'))
 
 # Debug

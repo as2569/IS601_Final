@@ -13,6 +13,7 @@ class Character(db.Model):
 
 class EventRecord(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
+#	owner_name = db.Column(db.String(100))
 	timeStamp = db.Column(db.DateTime)
 	event = db.Column(db.String(200))
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))

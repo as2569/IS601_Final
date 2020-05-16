@@ -34,7 +34,7 @@ def register_extensions(app):
 	csrf.init_app(app)
 	login_manager.init_app(app)
 	scheduler.init_app(app)
-	scheduler.start()
+#	scheduler.start()
 
 def register_blueprints(app):
 	from final.auth.models import User

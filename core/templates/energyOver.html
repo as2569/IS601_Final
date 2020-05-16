@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+	GAME OVER
+</h1>
+
+<h4>
+	Student ran out of energy!
+</h4>
+
+
+<div>
+	Another one bites the dust!
+
+	<a class="btn" href="{{url_for('core.selectCharacter') }}">TRY AGAIN</a>  
+	
+</div>
+{% endblock %}
