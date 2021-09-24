@@ -1,7 +1,7 @@
 ## P.H.Damn it
 
 ###### Checklist
-* User can register a new account
+* __User can register a new account__
 * User can login 
 * User can logout
 * Game logic
