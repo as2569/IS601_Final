@@ -15,6 +15,7 @@
 * Loss screen
 
 * __Git push__
+  <br>
   This is a desc for git push. Yada Yada Yada!
   
 * __Git pull__
