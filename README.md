@@ -18,8 +18,7 @@
   <br>
   This is a desc for git push. Yada Yada Yada!
   
-* __Git pull__
-  <br>
+* __Git pull__/
   Like push but backwards!
 
 
